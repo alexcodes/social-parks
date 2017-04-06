@@ -15,7 +15,8 @@ public class TweetConverterTest {
 
     @Before
     public void init() {
-        tweetConverter = new TweetConverter();
+        LocationExtractor locationExtractor = new LocationExtractor();
+        tweetConverter = new TweetConverter(locationExtractor);
     }
 
     @Test

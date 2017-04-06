@@ -18,7 +18,11 @@ public class TweetProcessor implements PostProcessor {
 
     @Override
     public void process(String message) {
-        GeoPost post = tweetConverter.convert(message);
-        log.debug("Tweet: {}", post);
+        try {
+            GeoPost post = tweetConverter.convert(message);
+            log.debug("Tweet: {}", post);
+        } catch (RuntimeException e) {
+            log.error("Exception during tweet processing:", e);
+        }
     }
 }
