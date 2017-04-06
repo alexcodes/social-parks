@@ -1,10 +1,15 @@
-<configuration debug="true">
+<configuration>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%d [%thread] %-5level %logger - %msg%n</pattern>
         </encoder>
     </appender>
+
+    <logger name="myLog" level="${logger_level:-debug}"/>
+    <logger name="org.apache" level="WARN" />
+    <logger name="httpclient" level="WARN" />
+    <logger name="org.springframework" level="INFO" />
 
     <root level="debug">
         <appender-ref ref="STDOUT" />
