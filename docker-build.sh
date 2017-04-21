@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-docker build -t web-server ./web-server
+docker build -t social-parks-web ./web-server
