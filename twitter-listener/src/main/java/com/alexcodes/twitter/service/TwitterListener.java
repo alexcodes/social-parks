@@ -95,7 +95,7 @@ public class TwitterListener implements CommandLineRunner {
 
             i++;
 
-            if (System.currentTimeMillis() - time > 60_000L) break;
+//            if (System.currentTimeMillis() - time > 60_000L) break;
         }
         log.info("{} TPS", i);
 

@@ -18,6 +18,11 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.alexcodes</groupId>
+            <artifactId>commons</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>
