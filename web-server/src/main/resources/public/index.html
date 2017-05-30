@@ -16,13 +16,32 @@
 
 </head>
 
-<body>
+<body onresize="resizeMap()">
 
-    <div class="container">
-        <p>Yandex Maps API <a href="https://github.com/yandex/mapsapi-heatmap">Heatmap Module</a></p>
-    </div>
+<div class="wrapper">
+
+    <nav id="header" class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/">Social Parks</a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="active"><a href="/">О проекте</a></li>
+                    <li><a href="/">Контакты</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
     <div id="YMapsID"></div>
+
+    <footer id="footer" class="footer">
+        <div class="container">
+            <p class="text-muted">&copy; Social Parks, 2017</p>
+        </div>
+    </footer>
+</div>
 
 </body>
 </html>
