@@ -1,16 +1,17 @@
+$(document).ready(function () {
+    resizeMap();
+});
+
+function resizeMap() {
+    var header = $("#header").height();
+    var footer = $("#footer").height();
+    var height = window.innerHeight - header - footer;
+    console.log("window: " + window.innerHeight);
+    console.log("result: " + height);
+    $("#YMapsID").height(height);
+}
+
 $(function () {
-
-    $(document).ready(function () {
-        resizeMap();
-    });
-
-    function resizeMap() {
-        var header = $("#header").height();
-        var footer = $("#footer").height();
-        var height = $(document).height() - header - footer;
-        console.log(height);
-        $("#YMapsID").height(height);
-    }
 
     ymaps.ready(function () {
         $.get("/map/coordinates", onSucceed).fail(onFail);
