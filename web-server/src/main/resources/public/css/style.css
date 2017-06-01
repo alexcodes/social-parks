@@ -29,6 +29,10 @@ a, a:focus, a:hover {
     top: 0;
 }
 
+.navbar-header .logo {
+    padding: 0;
+}
+
 .navbar-brand a {
     color: #2a2a2a;
 }
