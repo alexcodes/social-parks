@@ -30,7 +30,7 @@ $(function () {
         var map = new ymaps.Map('YMapsID', {
                 center: [55.751588, 37.617861],
                 controls: ['zoomControl', 'typeSelector', 'fullscreenControl'],
-                zoom: 11, type: 'yandex#hybrid'
+                zoom: 11, type: 'yandex#map'
             }),
 
             buttons = {
@@ -98,7 +98,7 @@ $(function () {
         ymaps.modules.require(['Heatmap'], function (Heatmap) {
             var heatmap = new Heatmap(data, {
                 gradient: gradients[0],
-                radius: radiuses[1],
+                radius: radiuses[2],
                 opacity: opacities[2]
             });
             heatmap.setMap(map);
