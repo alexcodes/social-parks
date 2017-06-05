@@ -1,5 +1,7 @@
 package com.alexcodes.opendata.service;
 
+import com.alexcodes.common.domain.OpenDataObject;
+import com.alexcodes.opendata.logic.OpenDataConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +14,9 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -39,27 +43,46 @@ public class LoaderService implements CommandLineRunner {
     @Value("${open-data-loader.api.rowLimit}")
     private int rowLimit;
 
+    @Value("${open-data-loader.datasetId}")
+    private String datasetId;
+
+    @Value("${open-data-loader.type}")
+    private OpenDataObject.Type type;
+
     private final RestTemplate restTemplate;
+    private final OpenDataConverter openDataConverter;
 
     @Autowired
-    public LoaderService(RestTemplate restTemplate) {
+    public LoaderService(
+            RestTemplate restTemplate,
+            OpenDataConverter openDataConverter) {
         Assert.notNull(restTemplate, "RestTemplate cannot be null");
+        Assert.notNull(openDataConverter, "OpenDataConverter cannot be null");
+
         this.restTemplate = restTemplate;
+        this.openDataConverter = openDataConverter;
     }
 
     @Override
     public void run(String... strings) throws Exception {
-        load("1465");
+        List<OpenDataObject> objects = load(datasetId, type);
     }
 
-    private void load(String datasetId) {
+    private List<OpenDataObject> load(String datasetId, OpenDataObject.Type type) {
+        log.debug("Loading open data set #{}...", datasetId);
         int count = getCount(datasetId);
-        log.debug("count = {}", count);
+        log.debug("Rows: {}", count);
+        if (count == 0) return Collections.emptyList();
+
+        List<OpenDataObject> result = new ArrayList<>(count);
 
         for (int skip = 0; skip < count; skip += rowLimit) {
-            loadData(datasetId, skip);
             log.debug("loaded {}/{}", skip, count);
+            List<OpenDataObject> list = loadPart(datasetId, type, skip);
+            result.addAll(list);
         }
+
+        return result;
     }
 
     private int getCount(String datasetId) {
@@ -70,14 +93,14 @@ public class LoaderService implements CommandLineRunner {
         return response.getBody();
     }
 
-    private void loadData(String datasetId, int skip) {
+    private List<OpenDataObject> loadPart(String datasetId, OpenDataObject.Type type, int skip) {
         UriComponents uriComponents = getUriData(datasetId, skip, rowLimit);
-        log.debug("{}", uriComponents);
 
         List<String> requestBody = Arrays.asList(GLOBAL_ID, COMMON_NAME, GEO_DATA);
         ResponseEntity<String> response =
                 restTemplate.postForEntity(uriComponents.toUri(), requestBody, String.class);
-        log.debug("{}", response.getBody());
+        String message = response.getBody();
+        return openDataConverter.convert(message, type);
     }
 
     private UriComponents getUriData(String datasetId, int skip, int top) {

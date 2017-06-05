@@ -1,7 +1,7 @@
 package com.alexcodes.common.domain;
 
 public class OpenDataObject {
-    public String id;
+    public Integer id;
     public String name;
     public Location location;
     public Type type;
