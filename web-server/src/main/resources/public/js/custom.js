@@ -95,6 +95,12 @@ $(function () {
             radiuses = [5, 10, 20, 30],
             opacities = [0.4, 0.6, 0.8, 1];
 
+        // map.geoObjects
+        //     .add(new ymaps.Placemark([55.694843, 37.435023],
+        //         {balloonContent: 'Очень длиннный, но невероятно интересный текст'},
+        //         {preset: 'islands#greenDotIconWithCaption'})
+        //     );
+
         ymaps.modules.require(['Heatmap'], function (Heatmap) {
             var heatmap = new Heatmap(data, {
                 gradient: gradients[0],
