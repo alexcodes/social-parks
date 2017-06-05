@@ -11,6 +11,16 @@ function resizeMap() {
     $("#YMapsID").height(height);
 }
 
+var leisure = [],
+    culture = [],
+    catering = [];
+
+$.get("/map/objects", function (response) {
+    leisure = response.leisure;
+    culture = response.culture;
+    catering = response.catering;
+});
+
 $(function () {
 
     ymaps.ready(function () {
@@ -34,6 +44,15 @@ $(function () {
             }),
 
             buttons = {
+                openData: new ymaps.control.Button({
+                    data: {
+                        content: 'Досуг'
+                    },
+                    options: {
+                        selectOnClick: false,
+                        maxWidth: 150
+                    }
+                }),
                 dissipating: new ymaps.control.Button({
                     data: {
                         content: 'Toggle dissipating'
@@ -95,12 +114,6 @@ $(function () {
             radiuses = [5, 10, 20, 30],
             opacities = [0.4, 0.6, 0.8, 1];
 
-        // map.geoObjects
-        //     .add(new ymaps.Placemark([55.694843, 37.435023],
-        //         {balloonContent: 'Очень длиннный, но невероятно интересный текст'},
-        //         {preset: 'islands#greenDotIconWithCaption'})
-        //     );
-
         ymaps.modules.require(['Heatmap'], function (Heatmap) {
             var heatmap = new Heatmap(data, {
                 gradient: gradients[0],
@@ -109,6 +122,16 @@ $(function () {
             });
             heatmap.setMap(map);
 
+            buttons.openData.events.add('press', function () {
+                for (var i = 0; i < leisure.length; i++) {
+                    var object = leisure[i];
+                    map.geoObjects
+                        .add(new ymaps.Placemark([object.location.latitude, object.location.longitude],
+                            {balloonContent: object.name},
+                            {preset: 'islands#greenDotIconWithCaption'})
+                        );
+                }
+            });
             buttons.dissipating.events.add('press', function () {
                 heatmap.options.set(
                     'dissipating', !heatmap.options.get('dissipating')

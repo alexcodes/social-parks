@@ -1,5 +1,6 @@
 package com.alexcodes.opendata.service;
 
+import com.alexcodes.common.dao.OpenDataObjectRepository;
 import com.alexcodes.common.domain.OpenDataObject;
 import com.alexcodes.opendata.logic.OpenDataConverter;
 import org.slf4j.Logger;
@@ -10,6 +11,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -51,21 +53,30 @@ public class LoaderService implements CommandLineRunner {
 
     private final RestTemplate restTemplate;
     private final OpenDataConverter openDataConverter;
+    private final OpenDataObjectRepository openDataObjectRepository;
 
     @Autowired
     public LoaderService(
             RestTemplate restTemplate,
-            OpenDataConverter openDataConverter) {
+            OpenDataConverter openDataConverter,
+            OpenDataObjectRepository openDataObjectRepository) {
         Assert.notNull(restTemplate, "RestTemplate cannot be null");
         Assert.notNull(openDataConverter, "OpenDataConverter cannot be null");
+        Assert.notNull(openDataObjectRepository, "OpenDataObjectRepository cannot be null");
 
         this.restTemplate = restTemplate;
         this.openDataConverter = openDataConverter;
+        this.openDataObjectRepository = openDataObjectRepository;
     }
 
     @Override
     public void run(String... strings) throws Exception {
+        Assert.isTrue(!StringUtils.isEmpty(datasetId), "DatasetId must be defined");
+        Assert.notNull(type, "Type must be defined");
+
         List<OpenDataObject> objects = load(datasetId, type);
+        openDataObjectRepository.save(objects);
+        log.debug("Saved {} open data objects [{}]", objects.size(), type);
     }
 
     private List<OpenDataObject> load(String datasetId, OpenDataObject.Type type) {

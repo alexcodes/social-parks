@@ -1,6 +1,7 @@
 package com.alexcodes.web.controller;
 
 import com.alexcodes.web.dto.MapDTO;
+import com.alexcodes.web.dto.OpenDataDTO;
 import com.alexcodes.web.service.MapService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -26,5 +27,12 @@ public class MapController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public MapDTO getCoordinates() {
         return mapService.getMap();
+    }
+
+    @RequestMapping(value = "/objects",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public OpenDataDTO getOpenData() {
+        return mapService.getOpenDataObjects();
     }
 }
