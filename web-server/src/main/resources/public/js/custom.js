@@ -44,57 +44,30 @@ $(function () {
             }),
 
             buttons = {
-                openData: new ymaps.control.Button({
+                cateringObjects: new ymaps.control.Button({
+                    data: {
+                        content: 'Общественное питание'
+                    },
+                    options: {
+                        selectOnClick: true,
+                        maxWidth: 150
+                    }
+                }),
+                cultureObjects: new ymaps.control.Button({
+                    data: {
+                        content: 'Культура'
+                    },
+                    options: {
+                        selectOnClick: true,
+                        maxWidth: 150
+                    }
+                }),
+                leisureObjects: new ymaps.control.Button({
                     data: {
                         content: 'Досуг'
                     },
                     options: {
-                        selectOnClick: false,
-                        maxWidth: 150
-                    }
-                }),
-                dissipating: new ymaps.control.Button({
-                    data: {
-                        content: 'Toggle dissipating'
-                    },
-                    options: {
-                        selectOnClick: false,
-                        maxWidth: 150
-                    }
-                }),
-                opacity: new ymaps.control.Button({
-                    data: {
-                        content: 'Change opacity'
-                    },
-                    options: {
-                        selectOnClick: false,
-                        maxWidth: 150
-                    }
-                }),
-                radius: new ymaps.control.Button({
-                    data: {
-                        content: 'Change radius'
-                    },
-                    options: {
-                        selectOnClick: false,
-                        maxWidth: 150
-                    }
-                }),
-                gradient: new ymaps.control.Button({
-                    data: {
-                        content: 'Reverse gradient'
-                    },
-                    options: {
-                        selectOnClick: false,
-                        maxWidth: 150
-                    }
-                }),
-                heatmap: new ymaps.control.Button({
-                    data: {
-                        content: 'Toggle Heatmap'
-                    },
-                    options: {
-                        selectOnClick: false,
+                        selectOnClick: true,
                         maxWidth: 150
                     }
                 })
@@ -114,6 +87,41 @@ $(function () {
             radiuses = [5, 10, 20, 30],
             opacities = [0.4, 0.6, 0.8, 1];
 
+        buttons.leisureObjects.events.add('press', function () {
+            buttons.cultureObjects.state.set('selected', false);
+            buttons.cateringObjects.state.set('selected', false);
+            addOpenDataObjects(leisure);
+        });
+        buttons.cultureObjects.events.add('press', function () {
+            buttons.leisureObjects.state.set('selected', false);
+            buttons.cateringObjects.state.set('selected', false);
+            addOpenDataObjects(culture);
+        });
+        buttons.cateringObjects.events.add('press', function () {
+            buttons.leisureObjects.state.set('selected', false);
+            buttons.cultureObjects.state.set('selected', false);
+            addOpenDataObjects(catering);
+        });
+
+        function addOpenDataObjects(objects) {
+            map.geoObjects.removeAll();
+
+            for (var i = 0; i < objects.length; i++) {
+                var object = objects[i];
+                map.geoObjects
+                    .add(new ymaps.Placemark([object.location.latitude, object.location.longitude],
+                        {balloonContent: object.name},
+                        {preset: 'islands#greenDotIconWithCaption'})
+                    );
+            }
+        }
+
+        for (var key in buttons) {
+            if (buttons.hasOwnProperty(key)) {
+                map.controls.add(buttons[key]);
+            }
+        }
+
         ymaps.modules.require(['Heatmap'], function (Heatmap) {
             var heatmap = new Heatmap(data, {
                 gradient: gradients[0],
@@ -121,53 +129,6 @@ $(function () {
                 opacity: opacities[2]
             });
             heatmap.setMap(map);
-
-            buttons.openData.events.add('press', function () {
-                for (var i = 0; i < leisure.length; i++) {
-                    var object = leisure[i];
-                    map.geoObjects
-                        .add(new ymaps.Placemark([object.location.latitude, object.location.longitude],
-                            {balloonContent: object.name},
-                            {preset: 'islands#greenDotIconWithCaption'})
-                        );
-                }
-            });
-            buttons.dissipating.events.add('press', function () {
-                heatmap.options.set(
-                    'dissipating', !heatmap.options.get('dissipating')
-                );
-            });
-            buttons.opacity.events.add('press', function () {
-                var current = heatmap.options.get('opacity'),
-                    index = opacities.indexOf(current);
-                heatmap.options.set(
-                    'opacity', opacities[++index == opacities.length ? 0 : index]
-                );
-            });
-            buttons.radius.events.add('press', function () {
-                var current = heatmap.options.get('radius'),
-                    index = radiuses.indexOf(current);
-                heatmap.options.set(
-                    'radius', radiuses[++index == radiuses.length ? 0 : index]
-                );
-            });
-            buttons.gradient.events.add('press', function () {
-                var current = heatmap.options.get('gradient');
-                heatmap.options.set(
-                    'gradient', current == gradients[0] ? gradients[1] : gradients[0]
-                );
-            });
-            buttons.heatmap.events.add('press', function () {
-                heatmap.setMap(
-                    heatmap.getMap() ? null : map
-                );
-            });
-
-            for (var key in buttons) {
-                if (buttons.hasOwnProperty(key)) {
-                    map.controls.add(buttons[key]);
-                }
-            }
         });
     }
 

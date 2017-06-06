@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface OpenDataObjectRepository extends CrudRepository<OpenDataObject, Integer> {
     List<OpenDataObject> findAllByType(OpenDataObject.Type type);
+    void deleteAllByType(OpenDataObject.Type type);
 }

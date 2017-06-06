@@ -11,7 +11,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -45,11 +44,14 @@ public class LoaderService implements CommandLineRunner {
     @Value("${open-data-loader.api.rowLimit}")
     private int rowLimit;
 
-    @Value("${open-data-loader.datasetId}")
-    private String datasetId;
+    @Value("#{'${open-data-loader.datasetIds.leisure}'.split(',')}")
+    private List<String> leisureIds;
 
-    @Value("${open-data-loader.type}")
-    private OpenDataObject.Type type;
+    @Value("#{'${open-data-loader.datasetIds.culture}'.split(',')}")
+    private List<String> cultureIds;
+
+    @Value("#{'${open-data-loader.datasetIds.catering}'.split(',')}")
+    private List<String> cateringIds;
 
     private final RestTemplate restTemplate;
     private final OpenDataConverter openDataConverter;
@@ -71,15 +73,29 @@ public class LoaderService implements CommandLineRunner {
 
     @Override
     public void run(String... strings) throws Exception {
-        Assert.isTrue(!StringUtils.isEmpty(datasetId), "DatasetId must be defined");
-        Assert.notNull(type, "Type must be defined");
+        Assert.notNull(leisureIds, "DatasetIds must be defined");
+        Assert.notNull(cultureIds, "DatasetIds must be defined");
+        Assert.notNull(cateringIds, "DatasetIds must be defined");
 
-        List<OpenDataObject> objects = load(datasetId, type);
-        openDataObjectRepository.save(objects);
-        log.debug("Saved {} open data objects [{}]", objects.size(), type);
+        loadType(leisureIds, OpenDataObject.Type.LEISURE);
+        loadType(cultureIds, OpenDataObject.Type.CULTURE);
+        loadType(cateringIds, OpenDataObject.Type.CATERING);
+
+        log.debug("Loading finished");
     }
 
-    private List<OpenDataObject> load(String datasetId, OpenDataObject.Type type) {
+    private void loadType(List<String> datasetIds, OpenDataObject.Type type) {
+        log.debug("Delete all {} objects", type);
+        openDataObjectRepository.deleteAllByType(type);
+
+        for (String datasetId : datasetIds) {
+            List<OpenDataObject> objects = loadDataset(datasetId, type);
+            openDataObjectRepository.save(objects);
+            log.debug("Saved {} open data objects [{}]", objects.size(), type);
+        }
+    }
+
+    private List<OpenDataObject> loadDataset(String datasetId, OpenDataObject.Type type) {
         log.debug("Loading open data set #{}...", datasetId);
         int count = getCount(datasetId);
         log.debug("Rows: {}", count);

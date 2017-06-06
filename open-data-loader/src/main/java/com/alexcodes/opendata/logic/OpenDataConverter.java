@@ -5,8 +5,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -16,8 +14,6 @@ import java.util.List;
 
 @Service
 public class OpenDataConverter {
-    private static final Logger log = LoggerFactory.getLogger(OpenDataConverter.class);
-
     private static final String CELLS = "Cells";
     private static final String GLOBAL_ID = "global_id";
     private static final String COMMON_NAME = "CommonName";
@@ -41,10 +37,19 @@ public class OpenDataConverter {
             JsonObject root = jsonArray.get(i).getAsJsonObject();
             OpenDataObject openDataObject = convert(root);
             openDataObject.type = type;
-            result.add(openDataObject);
+
+            if (isCorrectObject(openDataObject)) {
+                result.add(openDataObject);
+            }
         }
 
         return result;
+    }
+
+    private boolean isCorrectObject(OpenDataObject openDataObject) {
+        return openDataObject.id != null
+                && openDataObject.location != null
+                && openDataObject.type != null;
     }
 
     private OpenDataObject convert(JsonObject root) {
@@ -59,12 +64,16 @@ public class OpenDataConverter {
     }
 
     private Integer getId(JsonElement element) {
+        if (element == null || element.isJsonNull()) return null;
         Assert.isTrue(element.isJsonPrimitive(), "");
+
         return element.getAsJsonPrimitive().getAsInt();
     }
 
     private String getName(JsonElement element) {
+        if (element == null || element.isJsonNull()) return null;
         Assert.isTrue(element.isJsonPrimitive(), "");
+
         return element.getAsJsonPrimitive().getAsString();
     }
 }
