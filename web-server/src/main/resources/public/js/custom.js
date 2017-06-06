@@ -11,6 +11,8 @@ function resizeMap() {
     $("#YMapsID").height(height);
 }
 
+var buttonSelected;
+
 var leisure = [],
     culture = [],
     catering = [];
@@ -90,17 +92,39 @@ $(function () {
         buttons.leisureObjects.events.add('press', function () {
             buttons.cultureObjects.state.set('selected', false);
             buttons.cateringObjects.state.set('selected', false);
-            addOpenDataObjects(leisure);
+
+            if (buttonSelected != buttons.leisureObjects) {
+                addOpenDataObjects(leisure);
+                buttonSelected = buttons.leisureObjects;
+            } else {
+                buttonSelected = null;
+                addOpenDataObjects([]);
+            }
         });
         buttons.cultureObjects.events.add('press', function () {
             buttons.leisureObjects.state.set('selected', false);
             buttons.cateringObjects.state.set('selected', false);
-            addOpenDataObjects(culture);
+
+            if (buttonSelected != buttons.cultureObjects) {
+                addOpenDataObjects(culture);
+                buttonSelected = buttons.cultureObjects;
+            } else {
+                buttonSelected = null;
+                addOpenDataObjects([]);
+            }
         });
         buttons.cateringObjects.events.add('press', function () {
             buttons.leisureObjects.state.set('selected', false);
             buttons.cultureObjects.state.set('selected', false);
             addOpenDataObjects(catering);
+
+            if (buttonSelected != buttons.cateringObjects) {
+                addOpenDataObjects(catering);
+                buttonSelected = buttons.cateringObjects;
+            } else {
+                buttonSelected = null;
+                addOpenDataObjects([]);
+            }
         });
 
         function addOpenDataObjects(objects) {
