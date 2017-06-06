@@ -4,6 +4,7 @@ import com.alexcodes.web.dto.CoordinateDTO;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,7 +17,7 @@ public class DummyCoordinatesService implements CoordinatesService {
     private static final Random random = new Random(0L);
 
     @Override
-    public List<List<Double>> findCoordinates() {
+    public List<List<Double>> findCoordinates(Instant dateFrom, Instant dateTo) {
         return getDummy1();
     }
 
